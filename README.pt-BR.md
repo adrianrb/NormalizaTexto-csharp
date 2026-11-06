@@ -1,5 +1,7 @@
 # NormalizaTexto (Português - Brasil)
 
+🇺🇸 [English (en-US)](README.md) | 🇧🇷 **[Português (pt-BR)](README.pt-BR.md)**
+
 Utilitário Windows Forms desenvolvido em C# (.NET Framework) para normalizar textos, remover diacriticos (acentos) e analisar estatísticas de texto em tempo real.
 
 ## Funcionalidades
