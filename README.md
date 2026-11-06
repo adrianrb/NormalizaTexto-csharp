@@ -7,7 +7,7 @@ A Windows Forms utility written in C# (.NET Framework) for normalizing text, rem
 - **Diacritic Removal**: Instantly strips accents from text using Unicode normalization (`NormalizationForm.FormD`).
 - **Real-Time Statistics**: Tracks lines, words, and character counts as you type.
 - **Line Highlighting**: Highlights the active line in both source and destination text boxes for easy navigation.
-- **Automatic Versioning**: Increments the patch version (`Z`) on every build and stamps it into the assembly metadata (`AssemblyVersion`, `AssemblyFileVersion` and `AssemblyInformationalVersion`) using `version.txt`.
+- **Automatic Versioning**: Increments the patch version (`Z`) on every build and stamps it into the assembly metadata (`AssemblyVersion`, `AssemblyFileVersion` and `AssemblyInformationalVersion`) using `version.txt`. To build an exact version (for example a minor/major release), pass `/p:BuildVersion=1.1.0` to MSBuild: the value is used as-is and becomes the new baseline.
 
 ## Requirements
 

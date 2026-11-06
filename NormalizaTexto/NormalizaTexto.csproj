@@ -95,7 +95,7 @@
       <_Minor>$(_CurrentVersion.Split('.')[1])</_Minor>
       <_Patch>$(_CurrentVersion.Split('.')[2])</_Patch>
       <_NewPatch>$([MSBuild]::Add($(_Patch), 1))</_NewPatch>
-      <BuildVersion>$(_Major).$(_Minor).$(_NewPatch)</BuildVersion>
+      <BuildVersion Condition="'$(BuildVersion)' == ''">$(_Major).$(_Minor).$(_NewPatch)</BuildVersion>
     </PropertyGroup>
     <Message Text="Building version $(BuildVersion)" Importance="high" />
   </Target>

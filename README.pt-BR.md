@@ -7,7 +7,7 @@ Utilitário Windows Forms desenvolvido em C# (.NET Framework) para normalizar te
 - **Remoção de Acentos**: Remove instantaneamente acentos e caracteres diacríticos utilizando normalização Unicode (`NormalizationForm.FormD`).
 - **Estatísticas em Tempo Real**: Monitora contagem de linhas, palavras e caracteres à medida que você digita.
 - **Destaque de Linha**: Destaca a linha ativa nas caixas de texto de origem e destino para facilitar a navegação.
-- **Versionamento Automático**: Incrementa a versão de patch (`Z`) a cada build e a grava nos metadados do assembly (`AssemblyVersion`, `AssemblyFileVersion` e `AssemblyInformationalVersion`) usando o arquivo `version.txt`.
+- **Versionamento Automático**: Incrementa a versão de patch (`Z`) a cada build e a grava nos metadados do assembly (`AssemblyVersion`, `AssemblyFileVersion` e `AssemblyInformationalVersion`) usando o arquivo `version.txt`. Para compilar uma versão exata (por exemplo, um lançamento minor/major), passe `/p:BuildVersion=1.1.0` ao MSBuild: o valor é usado como está e passa a ser a nova base.
 
 ## Requisitos
 
