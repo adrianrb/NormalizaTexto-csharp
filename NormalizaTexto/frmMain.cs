@@ -1,21 +1,25 @@
 ﻿/* ãáçêí */
 using System;
-using System.Text;
-using System.Windows.Forms;
-using System.Globalization;
-using LibComponentesCustomizados;
+using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Drawing.Imaging;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace NormalizaTexto
 {
     public partial class frmMain : Form
     {
-        int lastLine = 0;
-        int lineNumber;
-        int SplitterPos;
+        private static readonly Regex WordRegex = new Regex(@"[\p{L}\p{N}]+", RegexOptions.Compiled);
+
+        private readonly Dictionary<RichTextBox, int> lastHighlightedLine = new Dictionary<RichTextBox, int>();
+        private readonly ToolTip splitterToolTip = new ToolTip();
+
+        private TextCharPositions highlightedLine;
+        private int splitterPosition;
+        private bool updatingSelection;
 
         public frmMain()
         {
@@ -24,98 +28,115 @@ namespace NormalizaTexto
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            SplitterPos = splitContainer1.SplitterDistance;
+            splitterPosition = splitContainer1.SplitterDistance;
 
-            ToolTip toolTip1 = new ToolTip();
-            toolTip1.IsBalloon = true;
-            toolTip1.SetToolTip(splitContainer1, "Arraste para redimencionar os painéis.\nDuplo clique para restaurar.");
-            
+            splitterToolTip.IsBalloon = true;
+            splitterToolTip.SetToolTip(
+                splitContainer1,
+                "Arraste para redimensionar os painéis.\nDuplo clique para restaurar.");
+
             txtOrig.SelectAll();
+            UpdateCaretInfo();
         }
-        
-        string RemoveDiacritics(string text)
+
+        private static string RemoveDiacritics(string text)
         {
-            string ret = "";
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
 
             try
             {
-                var normalizedString = text.Normalize(NormalizationForm.FormD);
-                var stringBuilder = new StringBuilder();
+                string normalizedString = text.Normalize(NormalizationForm.FormD);
+                var stringBuilder = new StringBuilder(normalizedString.Length);
 
-                foreach (var c in normalizedString)
+                foreach (char c in normalizedString)
                 {
-                    var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                    if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-                    {
+                    if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
                         stringBuilder.Append(c);
-                    }
                 }
 
-                ret = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+                return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
                 MessageBox.Show(ex.Message);
+                return text;
             }
-
-            return ret;
         }
 
         private void txtOrig_TextChanged(object sender, EventArgs e)
         {
-            txtOrig.SuspendLayout();
-            txtDest.SuspendLayout();
-
-            txtOrig.SelectAll();
             txtDest.Text = RemoveDiacritics(txtOrig.Text);
-            txtOrig.SelectionStart = 0;
-            txtOrig.SelectionLength = 0;
+            UpdateStatistics();
+            UpdateCaretInfo();
+        }
 
-            txtOrig.SelectionStart = 0;
-            txtOrig.SelectionLength = 0;
-            txtOrig.ScrollToCaret();
-            
-            txtDest.SelectionStart = 0;
-            txtDest.SelectionLength = 0;
-            txtDest.ScrollToCaret();
-
-            txtOrig.ResumeLayout();
-            txtDest.ResumeLayout();
-
-            TotLinhas.Text = (txtOrig.Lines.Length + 1).ToString();
-
-            MatchCollection wordColl = Regex.Matches(txtOrig.Text, @"[\W]+");
-            NumPalavras.Text = wordColl.Count.ToString();
-
+        private void UpdateStatistics()
+        {
+            TotLinhas.Text = txtOrig.Lines.Length.ToString();
+            NumPalavras.Text = WordRegex.Matches(txtOrig.Text).Count.ToString();
             NumCaracs.Text = txtOrig.TextLength.ToString();
         }
 
         private void txtOrig_Click(object sender, EventArgs e)
         {
-            txtOrig.SuspendLayout();
-            txtDest.SuspendLayout();
-
-            HighlightCurrentLine(txtOrig, Color.PaleTurquoise);
-            HighlightCurrentLine(txtDest, tcp.start, tcp.end, Color.PaleTurquoise);
-            
-            txtDest.SelectionStart = txtOrig.SelectionStart;
-            txtDest.ScrollToCaret();
-            txtOrig.ScrollToCaret();
-
-            txtOrig.ResumeLayout();
-            txtDest.ResumeLayout();
-
-            // Linha e coluna do cursor
-            linha.Text = lineNumber.ToString();
-
-            int firstChar = txtOrig.GetFirstCharIndexFromLine(lineNumber);
-            int column = txtOrig.SelectionStart - firstChar;
-            coluna.Text = column.ToString();
+            HighlightAndUpdate();
+            SyncDestinationCaret();
         }
 
-        public struct TextCharPositions
+        private void txtOrig_SelectionChanged(object sender, EventArgs e)
         {
-            public int start, end;
+            if (updatingSelection)
+                return;
+
+            UpdateCaretInfo();
+        }
+
+        private void txtOrig_KeyUp(object sender, KeyEventArgs e)
+        {
+            HighlightAndUpdate();
+        }
+
+        private void HighlightAndUpdate()
+        {
+            HighlightCurrentLine(txtOrig, Color.PaleTurquoise);
+
+            if (highlightedLine.end > highlightedLine.start)
+            {
+                HighlightCurrentLine(
+                    txtDest,
+                    highlightedLine.start,
+                    highlightedLine.end,
+                    Color.PaleTurquoise);
+            }
+
+            UpdateCaretInfo();
+        }
+
+        private void SyncDestinationCaret()
+        {
+            int position = Math.Min(txtOrig.SelectionStart, txtDest.TextLength);
+
+            txtDest.SelectionStart = position;
+            txtDest.SelectionLength = 0;
+            txtDest.ScrollToCaret();
+            txtOrig.ScrollToCaret();
+        }
+
+        private void UpdateCaretInfo()
+        {
+            int position = Math.Min(txtOrig.SelectionStart, txtOrig.TextLength);
+            int line = txtOrig.GetLineFromCharIndex(position);
+            int firstChar = Math.Max(txtOrig.GetFirstCharIndexFromLine(line), 0);
+
+            linha.Text = (line + 1).ToString();
+            coluna.Text = (position - firstChar + 1).ToString();
+        }
+
+        private struct TextCharPositions
+        {
+            public readonly int start;
+            public readonly int end;
 
             public TextCharPositions(int start, int end)
             {
@@ -124,103 +145,117 @@ namespace NormalizaTexto
             }
         }
 
-        TextCharPositions tcp;
-
-        private void HighlightCurrentLine(RichTextBox rtb, Color c)
+        private void HighlightCurrentLine(RichTextBox rtb, Color color)
         {
-            if (c == null)
-                c = Color.PaleTurquoise;
-
-            // Save current selection
-            int selectionStart = rtb.SelectionStart;
-            int selectionLength = rtb.SelectionLength;
-
-            // Get character positions for the current line
             int firstCharPosition = rtb.GetFirstCharIndexOfCurrentLine();
-            lineNumber = rtb.GetLineFromCharIndex(firstCharPosition);
+            int lineNumber = rtb.GetLineFromCharIndex(firstCharPosition);
             int lastCharPosition = rtb.GetFirstCharIndexFromLine(lineNumber + 1);
-            if (lastCharPosition == -1)
+
+            if (lastCharPosition < 0)
                 lastCharPosition = rtb.TextLength;
 
-            tcp = new TextCharPositions(firstCharPosition, lastCharPosition);
-
-            // Clear any previous color
-            if (lineNumber != lastLine)
-            {
-                int previousFirstCharPosition = rtb.GetFirstCharIndexFromLine(lastLine);
-                int previousLastCharPosition = rtb.GetFirstCharIndexFromLine(lastLine + 1);
-                if (previousLastCharPosition == -1)
-                    previousLastCharPosition = rtb.TextLength;
-
-                rtb.SelectionStart = previousFirstCharPosition;
-                rtb.SelectionLength = previousLastCharPosition - previousFirstCharPosition;
-                rtb.SelectionBackColor = SystemColors.Window;
-                lastLine = lineNumber;
-            }
-
-            // Set new color
-            rtb.SelectionStart = firstCharPosition;
-            rtb.SelectionLength = lastCharPosition - firstCharPosition;
-            if (rtb.SelectionLength > 0)
-                rtb.SelectionBackColor = c;
-
-            // Reset selection
-            rtb.SelectionStart = selectionStart;
-            rtb.SelectionLength = selectionLength;
+            highlightedLine = new TextCharPositions(firstCharPosition, lastCharPosition);
+            HighlightRange(rtb, firstCharPosition, lastCharPosition, lineNumber, color);
         }
 
-        private void HighlightCurrentLine(RichTextBox rtb, int firstCharPosition, int lastCharPosition, Color c)
+        private void HighlightCurrentLine(RichTextBox rtb, int firstCharPosition, int lastCharPosition, Color color)
         {
-            if (c == null)
-                c = Color.PaleTurquoise;
+            int lineNumber = rtb.GetLineFromCharIndex(Math.Min(firstCharPosition, rtb.TextLength));
+            HighlightRange(rtb, firstCharPosition, lastCharPosition, lineNumber, color);
+        }
 
-            // Save current selection
+        private void HighlightRange(
+            RichTextBox rtb,
+            int firstCharPosition,
+            int lastCharPosition,
+            int lineNumber,
+            Color color)
+        {
+            firstCharPosition = Math.Max(0, Math.Min(firstCharPosition, rtb.TextLength));
+            lastCharPosition = Math.Max(firstCharPosition, Math.Min(lastCharPosition, rtb.TextLength));
+
             int selectionStart = rtb.SelectionStart;
             int selectionLength = rtb.SelectionLength;
+            bool wasUpdatingSelection = updatingSelection;
+            updatingSelection = true;
 
-            // Get character positions for the current line
-            int lineNumber = rtb.GetLineFromCharIndex(firstCharPosition);
-            if (lastCharPosition == -1)
-                lastCharPosition = rtb.TextLength;
-
-            // Clear any previous color
-            if (lineNumber != lastLine)
+            try
             {
-                int previousFirstCharPosition = rtb.GetFirstCharIndexFromLine(lastLine);
-                int previousLastCharPosition = rtb.GetFirstCharIndexFromLine(lastLine + 1);
-                if (previousLastCharPosition == -1)
-                    previousLastCharPosition = rtb.TextLength;
+                int previousLine;
+                if (lastHighlightedLine.TryGetValue(rtb, out previousLine)
+                    && previousLine != lineNumber
+                    && previousLine >= 0)
+                {
+                    int previousFirstChar = rtb.GetFirstCharIndexFromLine(previousLine);
+                    if (previousFirstChar >= 0)
+                    {
+                        int previousLastChar = rtb.GetFirstCharIndexFromLine(previousLine + 1);
+                        if (previousLastChar < 0)
+                            previousLastChar = rtb.TextLength;
 
-                rtb.SelectionStart = previousFirstCharPosition;
-                rtb.SelectionLength = previousLastCharPosition - previousFirstCharPosition;
-                rtb.SelectionBackColor = SystemColors.Window;
-                lastLine = lineNumber;
+                        rtb.SelectionStart = previousFirstChar;
+                        rtb.SelectionLength = Math.Max(0, previousLastChar - previousFirstChar);
+                        rtb.SelectionBackColor = SystemColors.Window;
+                    }
+                }
+
+                lastHighlightedLine[rtb] = lineNumber;
+
+                if (lastCharPosition > firstCharPosition)
+                {
+                    rtb.SelectionStart = firstCharPosition;
+                    rtb.SelectionLength = lastCharPosition - firstCharPosition;
+                    rtb.SelectionBackColor = color;
+                }
+
+                rtb.SelectionStart = selectionStart;
+                rtb.SelectionLength = selectionLength;
             }
-
-            // Set new color
-            rtb.SelectionStart = firstCharPosition;
-            rtb.SelectionLength = lastCharPosition - firstCharPosition;
-            if (rtb.SelectionLength > 0)
-                rtb.SelectionBackColor = c;
-
-            // Reset selection
-            rtb.SelectionStart = selectionStart;
-            rtb.SelectionLength = selectionLength;
+            finally
+            {
+                updatingSelection = wasUpdatingSelection;
+            }
         }
 
         private void txtOrig_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.V)
             {
-                txtOrig.Text = (string)Clipboard.GetData("Text");
-
                 e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                try
+                {
+                    if (Clipboard.ContainsText())
+                        txtOrig.SelectedText = Clipboard.GetText();
+                }
+                catch (ExternalException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
         private void splitContainer1_DoubleClick(object sender, EventArgs e)
         {
-            splitContainer1.SplitterDistance = SplitterPos;
+            RestoreSplitterPosition();
+        }
+
+        private void RestoreSplitterPosition()
+        {
+            int minimum = splitContainer1.Panel1MinSize;
+            int maximum = splitContainer1.Width - splitContainer1.Panel2MinSize - splitContainer1.SplitterWidth;
+
+            if (maximum < minimum)
+                return;
+
+            splitContainer1.SplitterDistance = Math.Max(minimum, Math.Min(splitterPosition, maximum));
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            splitterToolTip.Dispose();
+            base.OnFormClosed(e);
         }
     }
 }

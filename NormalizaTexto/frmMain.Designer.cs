@@ -46,7 +46,6 @@ namespace NormalizaTexto
             this.NumPalavras = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
             this.NumCaracs = new System.Windows.Forms.ToolStripStatusLabel();
-            this.ofd = new System.Windows.Forms.OpenFileDialog();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -101,8 +100,10 @@ namespace NormalizaTexto
             this.txtOrig.TabIndex = 2;
             this.txtOrig.Text = "<Cole o texto aqui>";
             this.txtOrig.Click += new System.EventHandler(this.txtOrig_Click);
+            this.txtOrig.SelectionChanged += new System.EventHandler(this.txtOrig_SelectionChanged);
             this.txtOrig.TextChanged += new System.EventHandler(this.txtOrig_TextChanged);
             this.txtOrig.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtOrig_KeyDown);
+            this.txtOrig.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtOrig_KeyUp);
             // 
             // txtDest
             // 
@@ -207,12 +208,6 @@ namespace NormalizaTexto
             this.NumCaracs.Size = new System.Drawing.Size(13, 17);
             this.NumCaracs.Text = "0";
             // 
-            // ofd
-            // 
-            this.ofd.DefaultExt = "txt";
-            this.ofd.Filter = "Arquivos texto|*.txt|Todos os arquivos|*.*";
-            this.ofd.Title = "Abrir arquivo";
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -242,7 +237,6 @@ namespace NormalizaTexto
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.OpenFileDialog ofd;
         private SyncTextBox txtOrig;
         private SyncTextBox txtDest;
         private System.Windows.Forms.Label label1;
