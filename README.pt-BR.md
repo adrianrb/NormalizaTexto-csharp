@@ -19,9 +19,13 @@ Utilitário Windows Forms desenvolvido em C# (.NET Framework) para normalizar te
 ## Estrutura do Projeto
 
 - `NormalizaTexto/frmMain.cs`: Lógica principal da interface, estatísticas e conversão de acentos.
+- `NormalizaTexto/SyncTextBox.cs`: Controle RichTextBox que mantém a rolagem dos dois painéis sincronizada (embutido no executável).
 - `NormalizaTexto/version.txt`: Armazena a versão atual (`X.Y.Z`).
 - `NormalizaTexto/NormalizaTexto.csproj`: Arquivo de projeto com regras customizadas do MSBuild para versionamento.
-- `LibComponentesCustomizados` (projeto irmão): fornece o `SyncTextBox`, que mantém a rolagem dos dois painéis sincronizada.
+
+## Independente
+
+O executável é autossuficiente: nenhuma DLL extra é necessária ao lado do `NormalizaTexto.exe`.
 
 ## Licença
 

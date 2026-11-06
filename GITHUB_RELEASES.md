@@ -6,6 +6,23 @@ This document contains the release notes for GitHub Releases, provided in both E
 
 ## English (EN-US)
 
+### Release v1.1.3
+**Standalone executable**
+
+NormalizaTexto no longer requires an external DLL.
+
+#### Highlights:
+- The `SyncTextBox` control (keeps both panes scrolled in sync) is now embedded in the application.
+- `NormalizaTexto.exe` runs on its own — no `LibComponentesCustomizados.dll` needed alongside it.
+- Removed the external project reference from the solution and project file.
+
+#### Requirements:
+- Windows with .NET Framework 4.8.
+
+#### Files Included:
+- `NormalizaTexto.exe` (standalone executable)
+- Source code (ZIP / TAR.GZ)
+
 ### Release v1.1.1
 **Stability and versioning improvements**
 
@@ -56,6 +73,23 @@ Welcome to the first official release of **NormalizaTexto**!
 ---
 
 ## Português (PT-BR)
+
+### Lançamento v1.1.3
+**Executável independente**
+
+O NormalizaTexto não exige mais uma DLL externa.
+
+#### Destaques:
+- O controle `SyncTextBox` (mantém a rolagem dos dois painéis sincronizada) agora está embutido na aplicação.
+- O `NormalizaTexto.exe` roda sozinho — sem precisar do `LibComponentesCustomizados.dll` ao lado.
+- Referência de projeto externa removida da solução e do arquivo de projeto.
+
+#### Requisitos:
+- Windows com .NET Framework 4.8.
+
+#### Arquivos inclusos:
+- `NormalizaTexto.exe` (executável independente)
+- Código-fonte (ZIP / TAR.GZ)
 
 ### Lançamento v1.1.1
 **Melhorias de estabilidade e versionamento**
