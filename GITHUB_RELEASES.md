@@ -6,6 +6,38 @@ This document contains the release notes for GitHub Releases, provided in both E
 
 ## English (EN-US)
 
+### Release v1.1.1
+**Stability and versioning improvements**
+
+This release modernizes the build, fixes the text statistics and makes editing more predictable.
+
+#### Highlights:
+- **Correct text statistics**: the word count no longer counts separators and the total line count no longer adds a phantom line.
+- **Caret stays where you type**: editing no longer selects and repositions the whole document on every keystroke.
+- **Live line/column**: the status bar follows the caret as you move with the mouse or keyboard (1-based).
+- **Per-pane line highlight**: each pane tracks its own highlighted line, keeping source and destination in sync.
+- **Safer paste**: Ctrl+V inserts the clipboard text at the caret (or replaces the selection) instead of overwriting the whole document.
+- **Version stamped in the executable**: `version.txt` now drives `AssemblyVersion`, `AssemblyFileVersion` and `AssemblyInformationalVersion`, and the patch is bumped after a successful build. Use `/p:BuildVersion=X.Y.Z` to build an exact version.
+
+#### Fixes:
+- Corrected word and line counters.
+- Removed the caret jump caused by `SelectAll()` on every text change.
+- Fixed the highlight state shared between the two text boxes.
+- Clamped splitter restore and pasted caret positions to valid ranges.
+- Removed the unused `OpenFileDialog` and dead code.
+
+#### Under the hood:
+- Retargeted to **.NET Framework 4.8**.
+- Replaced the broken DLL `HintPath` with a project reference to `LibComponentesCustomizados`.
+- Stopped tracking `bin/`, `obj/` and `.suo`, and normalized line endings with `.gitattributes`.
+
+#### Requirements:
+- Windows with .NET Framework 4.8.
+
+#### Files Included:
+- `NormalizaTexto.exe` (standalone Windows Forms executable)
+- Source code (ZIP / TAR.GZ)
+
 ### Release v1.0.0
 **Initial Release**
 
@@ -24,6 +56,38 @@ Welcome to the first official release of **NormalizaTexto**!
 ---
 
 ## Português (PT-BR)
+
+### Lançamento v1.1.1
+**Melhorias de estabilidade e versionamento**
+
+Esta versão moderniza o build, corrige as estatísticas de texto e torna a edição mais previsível.
+
+#### Destaques:
+- **Estatísticas corretas**: a contagem de palavras não conta mais separadores e o total de linhas não soma uma linha fantasma.
+- **O cursor fica onde você digita**: a edição não seleciona nem reposiciona o documento inteiro a cada tecla.
+- **Linha/coluna ao vivo**: a barra de status acompanha o cursor ao mover com o mouse ou teclado (base 1).
+- **Destaque por painel**: cada painel controla sua própria linha destacada, mantendo origem e destino sincronizados.
+- **Colagem segura**: Ctrl+V insere o texto da área de transferência no cursor (ou substitui a seleção) em vez de sobrescrever o documento inteiro.
+- **Versão gravada no executável**: o `version.txt` agora alimenta `AssemblyVersion`, `AssemblyFileVersion` e `AssemblyInformationalVersion`, e o patch é incrementado após um build bem-sucedido. Use `/p:BuildVersion=X.Y.Z` para compilar uma versão exata.
+
+#### Correções:
+- Contadores de palavras e linhas corrigidos.
+- Removido o salto do cursor causado pelo `SelectAll()` a cada mudança de texto.
+- Corrigido o estado de destaque compartilhado entre as duas caixas de texto.
+- Restauração do splitter e posição do cursor após colar limitadas a intervalos válidos.
+- Removidos o `OpenFileDialog` não utilizado e código morto.
+
+#### Por baixo dos panos:
+- Mudança de alvo para **.NET Framework 4.8**.
+- `HintPath` quebrado da DLL substituído por uma referência de projeto ao `LibComponentesCustomizados`.
+- `bin/`, `obj/` e `.suo` deixaram de ser versionados, e os fins de linha foram normalizados com `.gitattributes`.
+
+#### Requisitos:
+- Windows com .NET Framework 4.8.
+
+#### Arquivos inclusos:
+- `NormalizaTexto.exe` (executável autônomo para Windows Forms)
+- Código-fonte (ZIP / TAR.GZ)
 
 ### Lançamento v1.0.0
 **Lançamento Inicial**
