@@ -1,0 +1,9 @@
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\bin\Debug\NormalizaTexto.exe
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\bin\Debug\NormalizaTexto.pdb
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\bin\Debug\LibComponentesCustomizados.dll
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\bin\Debug\LibComponentesCustomizados.pdb
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\obj\Debug\NormalizaTexto.frmMain.resources
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\obj\Debug\NormalizaTexto.Properties.Resources.resources
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\obj\Debug\NormalizaTexto.csproj.GenerateResource.Cache
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\obj\Debug\NormalizaTexto.exe
+C:\Users\C050997\documents\visual studio 2013\Projects\NormalizaTexto\NormalizaTexto\obj\Debug\NormalizaTexto.pdb
