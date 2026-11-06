@@ -1,5 +1,4 @@
-﻿using LibComponentesCustomizados;
-namespace NormalizaTexto
+﻿namespace NormalizaTexto
 {
     partial class frmMain
     {
@@ -32,8 +31,8 @@ namespace NormalizaTexto
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtOrig = new LibComponentesCustomizados.SyncTextBox();
-            this.txtDest = new LibComponentesCustomizados.SyncTextBox();
+            this.txtOrig = new SyncTextBox();
+            this.txtDest = new SyncTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();

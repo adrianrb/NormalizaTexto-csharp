@@ -35,10 +35,6 @@
     <ApplicationIcon>norm32x32.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\10 Testes\LibComponentesCustomizados\LibComponentesCustomizados\LibComponentesCustomizados.csproj">
-      <Project>{27C406EE-72A2-4173-90BB-0E117671B4C7}</Project>
-      <Name>LibComponentesCustomizados</Name>
-    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -54,6 +50,7 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="SyncTextBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
