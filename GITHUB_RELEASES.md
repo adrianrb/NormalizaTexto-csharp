@@ -35,7 +35,7 @@ This release modernizes the build, fixes the text statistics and makes editing m
 - Windows with .NET Framework 4.8.
 
 #### Files Included:
-- `NormalizaTexto.exe` (standalone Windows Forms executable)
+- `NormalizaTexto-v1.1.1.zip` (executable + required `LibComponentesCustomizados.dll`)
 - Source code (ZIP / TAR.GZ)
 
 ### Release v1.0.0
@@ -86,7 +86,7 @@ Esta versão moderniza o build, corrige as estatísticas de texto e torna a edi�
 - Windows com .NET Framework 4.8.
 
 #### Arquivos inclusos:
-- `NormalizaTexto.exe` (executável autônomo para Windows Forms)
+- `NormalizaTexto-v1.1.1.zip` (executável + `LibComponentesCustomizados.dll` necessário)
 - Código-fonte (ZIP / TAR.GZ)
 
 ### Lançamento v1.0.0
