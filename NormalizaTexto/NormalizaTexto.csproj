@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NormalizaTexto</RootNamespace>
     <AssemblyName>NormalizaTexto</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -35,9 +35,10 @@
     <ApplicationIcon>norm32x32.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LibComponentesCustomizados">
-      <HintPath>..\..\LibComponentesCustomizados\LibComponentesCustomizados\bin\Debug\LibComponentesCustomizados.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\10 Testes\LibComponentesCustomizados\LibComponentesCustomizados\LibComponentesCustomizados.csproj">
+      <Project>{27C406EE-72A2-4173-90BB-0E117671B4C7}</Project>
+      <Name>LibComponentesCustomizados</Name>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -78,29 +79,41 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="norm32x32.ico" />
-    <Content Include="version.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="version.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-    <PropertyGroup>
-      <VersionFilePath>$(MSBuildProjectDirectory)\version.txt</VersionFilePath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <VersionFilePath>$(MSBuildProjectDirectory)\version.txt</VersionFilePath>
+  </PropertyGroup>
+  <Target Name="PrepareVersion">
     <ReadLinesFromFile File="$(VersionFilePath)">
-      <Output TaskParameter="Lines" ItemName="VersionLines" />
+      <Output TaskParameter="Lines" ItemName="_VersionLines" />
     </ReadLinesFromFile>
     <PropertyGroup>
-      <CurrentVersion>@(VersionLines)</CurrentVersion>
-      <Major>$(CurrentVersion.Split('.')[0])</Major>
-      <Minor>$(CurrentVersion.Split('.')[1])</Minor>
-      <Patch>$(CurrentVersion.Split('.')[2])</Patch>
-      <NewPatch>$([MSBuild]::Add($(Patch), 1))</NewPatch>
-      <UpdatedVersion>$(Major).$(Minor).$(NewPatch)</UpdatedVersion>
+      <_CurrentVersion>@(_VersionLines)</_CurrentVersion>
+      <_Major>$(_CurrentVersion.Split('.')[0])</_Major>
+      <_Minor>$(_CurrentVersion.Split('.')[1])</_Minor>
+      <_Patch>$(_CurrentVersion.Split('.')[2])</_Patch>
+      <_NewPatch>$([MSBuild]::Add($(_Patch), 1))</_NewPatch>
+      <BuildVersion>$(_Major).$(_Minor).$(_NewPatch)</BuildVersion>
     </PropertyGroup>
-    <WriteLinesToFile File="$(VersionFilePath)" Lines="$(UpdatedVersion)" Overwrite="true" Encoding="UTF-8" />
-    <Message Text="Version incremented to $(UpdatedVersion)" Importance="high" />
+    <Message Text="Building version $(BuildVersion)" Importance="high" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="GenerateVersionInfo" DependsOnTargets="PrepareVersion" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <VersionInfoFile>$(IntermediateOutputPath)VersionInfo.g.cs</VersionInfoFile>
+    </PropertyGroup>
+    <WriteLinesToFile
+        File="$(VersionInfoFile)"
+        Lines="// &lt;auto-generated&gt;;[assembly: System.Reflection.AssemblyVersion(&quot;$(BuildVersion).0&quot;)];[assembly: System.Reflection.AssemblyFileVersion(&quot;$(BuildVersion).0&quot;)];[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(BuildVersion)&quot;)]"
+        Overwrite="true"
+        Encoding="UTF-8" />
+    <ItemGroup>
+      <Compile Include="$(VersionInfoFile)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="CommitVersion" AfterTargets="CoreCompile" Condition="'$(BuildingProject)' != 'false' and '$(BuildVersion)' != ''">
+    <WriteLinesToFile File="$(VersionFilePath)" Lines="$(BuildVersion)" Overwrite="true" Encoding="UTF-8" />
+    <Message Text="Version incremented to $(BuildVersion)" Importance="high" />
   </Target>
 </Project>
